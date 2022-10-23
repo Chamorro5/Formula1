@@ -1,0 +1,94 @@
+<%@page import="servicio.NoticiaSrv"%>
+<%@page import="entidad.Noticia"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Arrays"%>
+<%@ page import="java.util.*"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+
+<%
+// Create an ArrayList with test data
+List<Noticia> lNoticia = NoticiaSrv.getInstance().getAll();
+pageContext.setAttribute("noticias", lNoticia);
+Map<String, String> lImagenes = new HashMap<>();
+for (Noticia noti : lNoticia) {
+	lImagenes.put(noti.getPermalink(), new String(noti.getImagen()));
+	pageContext.setAttribute(noti.getPermalink(), new String(noti.getImagen()));
+}
+pageContext.setAttribute("imagenes", lImagenes);
+%>
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<style>
+.row {
+  display: flex; /* equal height of the children */
+}
+
+.col {
+  flex: 1; /* additionally, equal width */
+  
+  padding: 1em;
+  border: solid;
+}
+
+#cabecera {
+	display: flex;
+	justify-content: center;
+}
+</style>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Pagina Principal</title>
+</head>
+<body>
+	
+	<div id="cabecera">
+		<img src="img/logo.jpg" alt="Logo F1" align="middle" width="700"
+			height="400">
+	</div>
+	<div class="row">
+		<div style="background-color: #BCC6CC; width: 66%; display: inline-block;" class="row">
+			<table width="100%">
+				<c:forEach items="${noticias}" var="noticia">
+
+					<tr>
+						<td><a href="Noticia?id=${noticia.permalink}">
+								<h2>${noticia.titulo}</h2>
+						</a></td>
+					</tr>
+					<tr>
+						<td><img alt="img" style="width: 500px;"
+							src="data:image/jpeg;base64,${imagenes[noticia.permalink]}" /></td>
+						<td> ${noticia.texto} </td>
+					</tr>
+				</c:forEach>
+			</table>
+		</div>
+		<div style="background-color: #E5E4E2; width: 33%; display: inline-block;" class="row">
+			<form action="login" method="POST">
+				<input type="hidden" name="origin" value="${origin}">
+				<c:if test="${not empty error}"> * error: ${error} 
+				</c:if>
+				<c:choose>
+    				<c:when test="${not empty user}">
+        				Esta conectado actualmente como : ${user.nombre}
+        				<br>
+        				<a href="logout">Logout</a>
+    				</c:when>
+    				<c:otherwise>
+    					<a href="PaginaLogin.html">Haz logging</a>
+    				</c:otherwise>
+				</c:choose>
+				
+				
+			</form>
+			<br /> <br />
+		</div>
+	</div>
+</body>
+</html>
